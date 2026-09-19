@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import com.tvdiario.sistema_chamado.model.enums.Departamento;
-import com.tvdiario.sistema_chamado.model.enums.StatusChamado;
 import com.tvdiario.sistema_chamado.model.enums.UsuarioTipo;
 
 import jakarta.persistence.Column;
@@ -57,8 +56,4 @@ public class Usuario {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UsuarioTipo usuarioTipo;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private StatusChamado statusChamado;
 }

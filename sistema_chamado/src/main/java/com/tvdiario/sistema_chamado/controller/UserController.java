@@ -25,8 +25,11 @@ import com.tvdiario.sistema_chamado.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
+
 @RestController
 @RequestMapping("/api/usuarios")
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class UserController {
 

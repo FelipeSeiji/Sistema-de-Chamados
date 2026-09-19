@@ -25,8 +25,11 @@ import com.tvdiario.sistema_chamado.service.ChamadoService;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
+
 @RestController
 @RequestMapping("/api/chamados")
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class ChamadoController {
 

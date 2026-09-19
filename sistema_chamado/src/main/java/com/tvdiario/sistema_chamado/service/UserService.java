@@ -1,4 +1,4 @@
-package com.tvdiario.sistema_chamado.service;
+﻿package com.tvdiario.sistema_chamado.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -48,11 +48,6 @@ public class UserService {
         } else if (usuario.getUsuarioTipo() == null) {
             usuario.setUsuarioTipo(UsuarioTipo.USER);
         }
-
-        if (usuario.getStatusChamado() == null) {
-            usuario.setStatusChamado(StatusChamado.ABERTO);
-        }
-
         return userRepository.save(usuario);
     }
 
@@ -159,7 +154,6 @@ public class UserService {
     @Transactional
     public Usuario alterarStatus(UUID id, StatusChamado novoStatus) {
         Usuario usuario = buscarPorId(id);
-        usuario.setStatusChamado(novoStatus);
         usuario.setAtualizadoEm(LocalDateTime.now());
         return userRepository.save(usuario);
     }
@@ -201,10 +195,6 @@ public class UserService {
                 u.setUsuarioTipo(UsuarioTipo.TECH);
             } else if (u.getUsuarioTipo() == null) {
                 u.setUsuarioTipo(UsuarioTipo.USER);
-            }
-
-            if (u.getStatusChamado() == null) {
-                u.setStatusChamado(StatusChamado.ABERTO);
             }
 
             if (u.getPassword() == null || u.getPassword().isBlank()) {
