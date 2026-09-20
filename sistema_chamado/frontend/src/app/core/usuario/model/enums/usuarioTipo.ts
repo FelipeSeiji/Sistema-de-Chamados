@@ -1,0 +1,1 @@
+export type UsuarioTipo = 'ADMINISTRADOR' | 'TECNICO' | 'USUARIO';

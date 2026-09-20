@@ -1,0 +1,7 @@
+export enum StatusChamado {
+  ABERTO = 'ABERTO',
+  EM_ANDAMENTO = 'EM_ANDAMENTO',
+  RESOLVIDO = 'RESOLVIDO',
+  CANCELADO = 'CANCELADO',
+  REABERTO = 'REABERTO'
+}

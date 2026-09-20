@@ -1,0 +1,13 @@
+export type Departamento =
+  | 'ADMINISTRATIVO'
+  | 'COMERCIAL'
+  | 'DIRETORIA'
+  | 'ENTRETENIMENTO'
+  | 'ESTAGIO'
+  | 'JORNALISMO'
+  | 'MARKETING'
+  | 'OPEC'
+  | 'OPERACOES'
+  | 'PROGRAMACAO'
+  | 'RECURSOS_HUMANOS'
+  | 'TECNOLOGIA';
