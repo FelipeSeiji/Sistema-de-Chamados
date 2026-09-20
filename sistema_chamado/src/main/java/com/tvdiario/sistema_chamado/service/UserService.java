@@ -1,4 +1,4 @@
-﻿package com.tvdiario.sistema_chamado.service;
+package com.tvdiario.sistema_chamado.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

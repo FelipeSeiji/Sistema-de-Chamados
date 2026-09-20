@@ -1,0 +1,19 @@
+# Ignorar pasta de build local (será recompilado dentro do container)
+target/
+
+# Git
+.git
+.gitignore
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.code-workspace
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
