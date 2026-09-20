@@ -1,4 +1,4 @@
-package com.tvdiario.sistema_chamado.controller;
+package com.tvdiario.sistema_chamado.domain.controller;
 
 import java.net.URI;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,18 +15,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.tvdiario.sistema_chamado.dto.AtualizarChamadoDTO;
-import com.tvdiario.sistema_chamado.dto.EditarChamadoDTO;
-import com.tvdiario.sistema_chamado.dto.MotivoDTO;
-import com.tvdiario.sistema_chamado.model.Chamado;
-import com.tvdiario.sistema_chamado.model.enums.CategoriaChamado;
-import com.tvdiario.sistema_chamado.model.enums.StatusChamado;
-import com.tvdiario.sistema_chamado.service.ChamadoService;
+import com.tvdiario.sistema_chamado.domain.dto.AtualizarChamadoDTO;
+import com.tvdiario.sistema_chamado.domain.dto.CriarChamadoDTO;
+import com.tvdiario.sistema_chamado.domain.dto.EditarChamadoDTO;
+import com.tvdiario.sistema_chamado.domain.dto.MotivoDTO;
+import com.tvdiario.sistema_chamado.domain.model.Chamado;
+import com.tvdiario.sistema_chamado.domain.model.enums.CategoriaChamado;
+import com.tvdiario.sistema_chamado.domain.model.enums.StatusChamado;
+import com.tvdiario.sistema_chamado.domain.service.ChamadoService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 @RestController
 @RequestMapping("/api/chamados")
@@ -37,10 +39,16 @@ public class ChamadoController {
 
     @PostMapping
     public ResponseEntity<Chamado> abrirChamado(
-            @RequestBody Chamado chamado,
+            @RequestBody @Valid CriarChamadoDTO dto,
             @RequestParam UUID usuarioId) {
-        Chamado criado = chamadoService.abrirChamado(chamado, usuarioId);
-        return ResponseEntity.created(URI.create("/api/chamados/" + criado.getId())).body(criado);
+        Chamado criado = chamadoService.abrirChamado(dto, usuarioId);
+        
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(criado.getId())
+                .toUri();
+                
+        return ResponseEntity.created(uri).body(criado);
     }
 
     @GetMapping
@@ -54,6 +62,11 @@ public class ChamadoController {
             return ResponseEntity.ok(chamadoService.listarPorCategoria(categoria));
         }
         return ResponseEntity.ok(chamadoService.listarTodos());
+    }
+
+    @GetMapping("/estatisticas")
+    public ResponseEntity<Map<String, Long>> obterEstatisticas() {
+        return ResponseEntity.ok(chamadoService.obterEstatisticas());
     }
 
     @GetMapping("/{id}")
@@ -74,23 +87,22 @@ public class ChamadoController {
     @PutMapping("/{id}/atualizar")
     public ResponseEntity<Chamado> atualizar(
             @PathVariable UUID id,
-            @RequestBody AtualizarChamadoDTO dto) {
-        return ResponseEntity.ok(chamadoService.atualizarChamado(id, dto.solucao(), dto.status()));
+            @RequestBody @Valid AtualizarChamadoDTO dto) {
+        return ResponseEntity.ok(chamadoService.atualizarChamado(id, dto));
     }
 
     @PostMapping("/{id}/concluir")
     public ResponseEntity<Chamado> concluir(
             @PathVariable UUID id,
-            @RequestBody MotivoDTO dto) {
+            @RequestBody @Valid MotivoDTO dto) {
         return ResponseEntity.ok(chamadoService.concluirChamado(id, dto.motivo()));
     }
 
     @PutMapping("/{id}/editar")
     public ResponseEntity<Chamado> editar(
             @PathVariable UUID id,
-            @RequestBody EditarChamadoDTO dto) {
-        return ResponseEntity.ok(chamadoService.editarChamado(
-                id, dto.titulo(), dto.descricao(), dto.categoria(), dto.prioridade()));
+            @RequestBody @Valid EditarChamadoDTO dto) {
+        return ResponseEntity.ok(chamadoService.editarChamado(id, dto));
     }
 
     @PostMapping("/{id}/reabrir")
@@ -107,10 +119,5 @@ public class ChamadoController {
             @RequestBody(required = false) MotivoDTO dto) {
         String motivo = dto != null ? dto.motivo() : null;
         return ResponseEntity.ok(chamadoService.cancelarChamado(id, motivo));
-    }
-
-    @GetMapping("/estatisticas")
-    public ResponseEntity<Map<String, Long>> obterEstatisticas() {
-        return ResponseEntity.ok(chamadoService.obterEstatisticas());
     }
 }

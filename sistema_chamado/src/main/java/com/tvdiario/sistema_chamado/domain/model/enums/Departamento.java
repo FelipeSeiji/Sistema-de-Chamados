@@ -1,4 +1,4 @@
-package com.tvdiario.sistema_chamado.model.enums;
+package com.tvdiario.sistema_chamado.domain.model.enums;
 
 public enum Departamento {
     ADMINISTRATIVO,
