@@ -22,6 +22,7 @@ public class ChamadoDashboardService {
         stats.put("total", chamadoRepository.count());
         stats.put("abertos", chamadoRepository.countByStatus(StatusChamado.ABERTO));
         stats.put("emAtendimento", chamadoRepository.countByStatus(StatusChamado.EM_ATENDIMENTO));
+        stats.put("aguardando", chamadoRepository.countByStatus(StatusChamado.AGUARDANDO));
         stats.put("concluidos", chamadoRepository.countByStatus(StatusChamado.CONCLUIDO));
         stats.put("cancelados", chamadoRepository.countByStatus(StatusChamado.CANCELADO));
         return stats;

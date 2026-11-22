@@ -1,0 +1,5 @@
+<section class="card form-card"><p class="eyebrow">CHAMADO #{{ chamadoId }}</p><h1>Editar chamado</h1><form (ngSubmit)="salvar()">
+<label>Título<input name="titulo" [(ngModel)]="titulo" required maxlength="200"></label><label>Descrição<textarea name="descricao" [(ngModel)]="descricao" required rows="5"></textarea></label>
+<label>Categoria<select name="categoria" [(ngModel)]="categoria">@for (c of categorias; track c.value) { <option [value]="c.value">{{ c.label }}</option> }</select></label><label>Prioridade<select name="prioridade" [(ngModel)]="prioridade"><option value="BAIXA">Baixa</option><option value="MEDIA">Média</option><option value="ALTA">Alta</option><option value="URGENTE">Urgente</option></select></label>
+@if (mensagemErro) { <p class="error" role="alert">{{ mensagemErro }}</p> }
+<button [disabled]="carregando">Salvar alterações</button></form></section>

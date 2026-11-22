@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { Chamado } from '../../core/chamado/model/chamado';
@@ -13,10 +13,12 @@ import { ChamadoReaderService } from '../../core/chamado/service/chamadoReaderSe
   styleUrls: ['./relatorios.component.css']
 })
 export class RelatoriosComponent implements OnInit {
+  private readonly cdr = inject(ChangeDetectorRef);
   private chamadoReader = inject(ChamadoReaderService);
 
   chamados: Chamado[] = [];
   estatisticas: Record<string, number> = {};
+  mensagemErro = '';
   carregando = false;
 
   ngOnInit(): void {
@@ -28,21 +30,25 @@ export class RelatoriosComponent implements OnInit {
 
     this.chamadoReader.listar().subscribe({
       next: (dados: Chamado[]) => {
+        this.cdr.markForCheck();
         this.chamados = dados;
         this.carregando = false;
       },
       error: (err: unknown) => {
-        console.error('Erro ao carregar relatórios:', err);
+        this.cdr.markForCheck();
+        this.mensagemErro = (err as {error?: {message?: string}})?.error?.message ?? 'Não foi possível completar a ação. Verifique sua sessão e tente novamente.';
         this.carregando = false;
       }
     });
 
     this.chamadoReader.obterEstatisticas().subscribe({
       next: (stats: Record<string, number>) => {
+        this.cdr.markForCheck();
         this.estatisticas = stats;
       },
       error: (err: unknown) => {
-        console.error('Erro ao carregar estatísticas:', err);
+        this.cdr.markForCheck();
+        this.mensagemErro = (err as {error?: {message?: string}})?.error?.message ?? 'Não foi possível completar a ação. Verifique sua sessão e tente novamente.';
       }
     });
   }

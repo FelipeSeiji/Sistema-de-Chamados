@@ -19,13 +19,14 @@ import lombok.RequiredArgsConstructor;
 public class AuthService {
     private final UsuarioRepository usuarioRepository;
     private final UsuarioQueryService usuarioQueryService;
+    private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
     public Usuario autenticar(LoginDTO dto) {
         Usuario usuario = usuarioRepository.findByEmailIgnoreCase(dto.email().trim())
                 .orElseThrow(() -> new RegraNegocioException("E-mail ou senha incorretos."));
 
-        if (!usuario.getPassword().equals(dto.senha())) {
+        if (!passwordEncoder.matches(dto.senha(), usuario.getPassword())) {
             throw new RegraNegocioException("E-mail ou senha incorretos.");
         }
 
@@ -36,22 +37,22 @@ public class AuthService {
     public void trocarSenha(UUID id, TrocarSenhaDTO dto) {
         Usuario usuario = usuarioQueryService.buscarPorId(id);
 
-        if (!usuario.getPassword().equals(dto.senhaAtual())) {
+        if (!passwordEncoder.matches(dto.senhaAtual(), usuario.getPassword())) {
             throw new RegraNegocioException("A senha atual informada está incorreta.");
         }
 
-        usuario.setPassword(dto.novaSenha().trim());
+        usuario.setPassword(passwordEncoder.encode(dto.novaSenha()));
         usuarioRepository.save(usuario);
     }
 
     @Transactional
     public void redefinirSenha(UUID id, String novaSenha) {
-        if (novaSenha == null || novaSenha.trim().length() < 6) {
+        if (novaSenha == null || novaSenha.length() < 6 || novaSenha.length() > 72) {
             throw new RegraNegocioException("A nova senha deve conter no mínimo 6 caracteres.");
         }
 
         Usuario usuario = usuarioQueryService.buscarPorId(id);
-        usuario.setPassword(novaSenha.trim());
+        usuario.setPassword(passwordEncoder.encode(novaSenha));
         usuarioRepository.save(usuario);
     }
 }

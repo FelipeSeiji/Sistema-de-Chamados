@@ -14,14 +14,20 @@ export const authGuard: CanActivateFn = () => {
   return false;
 };
 
-export const techGuard: CanActivateFn = () => {
+export const adminGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  if (authService.isAuthenticated() && authService.isTechOrAdmin()) {
+  if (authService.isAuthenticated() && authService.isAdmin()) {
     return true;
   }
 
   router.navigate(['/dashboard']);
   return false;
+};
+
+
+export const techGuard: CanActivateFn = () => {
+ const auth = inject(AuthService); const router = inject(Router);
+ return auth.isTechOrAdmin() ? true : router.createUrlTree(['/dashboard']);
 };

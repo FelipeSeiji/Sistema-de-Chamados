@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: sistema-de-chamados
+    runtime: docker
+    plan: free
+    rootDir: sistema_chamado
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health
+    envVars:
+      - key: DEMO_ENABLED
+        value: "true"
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: JAVA_TOOL_OPTIONS
+        value: "-Xms64m -Xmx256m -XX:+UseSerialGC -XX:ActiveProcessorCount=2"
+      - key: SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
+        value: "3"
+      - key: SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE
+        value: "0"
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false

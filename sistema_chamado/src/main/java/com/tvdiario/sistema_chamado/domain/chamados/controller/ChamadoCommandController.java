@@ -30,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/chamados")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
+@org.springframework.transaction.annotation.Transactional
 public class ChamadoCommandController {
 
     private final ChamadoCommandService chamadoCommandService;

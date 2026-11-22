@@ -1,6 +1,1 @@
-export enum Prioridade {
-  BAIXA = 'BAIXA',
-  NORMAL = 'NORMAL',
-  ALTA = 'ALTA',
-  URGENTE = 'URGENTE'
-}
+export type { Prioridade } from '../../enums/prioridade';

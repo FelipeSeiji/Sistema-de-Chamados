@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -21,6 +21,7 @@ import { AuthService } from '../../core/guards/auth.service';
   styleUrls: ['./cadastro.component.css']
 })
 export class CadastroComponent {
+  private readonly cdr = inject(ChangeDetectorRef);
   private userAdminService = inject(UserAdminService);
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -30,7 +31,7 @@ export class CadastroComponent {
   email = '';
   password = '';
   departamento: Departamento = 'JORNALISMO';
-  usuarioTipo: UsuarioTipo = 'USER' as UsuarioTipo;
+  usuarioTipo: UsuarioTipo = 'USUARIO';
 
   departamentos = DEPARTAMENTOS_LIST;
   mensagemErro = '';
@@ -56,11 +57,12 @@ export class CadastroComponent {
 
     this.userAdminService.criar(dto).subscribe({
       next: (novoUsuario: UsuarioResponseDTO) => {
+        this.cdr.markForCheck();
         this.carregando = false;
-        this.authService.setUser(novoUsuario);
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/login']);
       },
       error: (err: unknown) => {
+        this.cdr.markForCheck();
         this.carregando = false;
         this.mensagemErro = 'Erro ao realizar cadastro. Verifique os dados introduzidos.';
         console.error('Erro no cadastro:', err);

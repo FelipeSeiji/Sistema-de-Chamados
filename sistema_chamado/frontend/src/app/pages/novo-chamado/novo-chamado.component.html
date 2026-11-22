@@ -1,0 +1,8 @@
+<section class="card form-card"><p class="eyebrow">CENTRAL DE SUPORTE</p><h1>Novo chamado</h1><p class="muted">Descreva o problema para que a equipe possa ajudar.</p>
+<form (ngSubmit)="criarChamado()">
+@if (authService.isAdmin()) { <label>Solicitante<select name="solicitante" [(ngModel)]="usuarioSolicitanteId" required>@for (u of usuarios; track u.id) { <option [value]="u.id">{{ u.nome }}</option> }</select></label> }
+<label>Título<input name="titulo" [(ngModel)]="titulo" maxlength="200" required></label>
+<label>Descrição<textarea name="descricao" [(ngModel)]="descricao" rows="5" required></textarea></label>
+<div class="filters"><label>Categoria<select name="categoria" [(ngModel)]="categoria">@for (c of categorias; track c.value) { <option [value]="c.value">{{ c.label }}</option> }</select></label><label>Prioridade<select name="prioridade" [(ngModel)]="prioridade"><option value="BAIXA">Baixa</option><option value="MEDIA">Média</option><option value="ALTA">Alta</option><option value="URGENTE">Urgente</option></select></label></div>
+@if (mensagemErro) { <p class="error" role="alert">{{ mensagemErro }}</p> }
+<button [disabled]="carregando">{{ carregando ? 'Salvando…' : 'Abrir chamado' }}</button></form></section>

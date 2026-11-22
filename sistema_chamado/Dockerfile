@@ -1,34 +1,23 @@
-# ================================================
-# ETAPA 1: Build da aplicação com Maven
-# ================================================
-FROM eclipse-temurin:25-jdk AS builder
+FROM node:24-alpine AS frontend
+WORKDIR /frontend
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci
+COPY frontend/ ./
+RUN npm run build
 
+FROM eclipse-temurin:21-jdk AS backend
 WORKDIR /app
-
-# Copia o wrapper do Maven e o pom.xml primeiro (cache de dependências)
-COPY mvnw .
-COPY .mvn .mvn
-COPY pom.xml .
-
-# Baixa as dependências (cache eficiente)
+COPY mvnw pom.xml ./
+COPY .mvn/ .mvn/
 RUN chmod +x mvnw && ./mvnw dependency:go-offline -B
+COPY src/ src/
+COPY --from=frontend /frontend/dist/frontend/browser/ src/main/resources/static/
+RUN ./mvnw package -DskipTests -B
 
-# Copia o código-fonte e compila
-COPY src ./src
-RUN ./mvnw clean package -DskipTests -B
-
-# ================================================
-# ETAPA 2: Imagem final leve apenas com o JRE
-# ================================================
-FROM eclipse-temurin:25-jre
-
+FROM eclipse-temurin:21-jre
 WORKDIR /app
-
-# Copia o .jar gerado na etapa de build
-COPY --from=builder /app/target/*.jar app.jar
-
-# Expõe a porta da aplicação
+RUN groupadd --system helpdesk && useradd --system --gid helpdesk helpdesk
+COPY --from=backend /app/target/*.jar app.jar
+USER helpdesk
 EXPOSE 8080
-
-# Inicia a aplicação
 ENTRYPOINT ["java", "-jar", "app.jar"]

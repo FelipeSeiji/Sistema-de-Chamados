@@ -1,0 +1,16 @@
+<header class="page-heading"><div><p class="eyebrow">VISÃO GERAL</p><h1>Dashboard de chamados</h1><p class="muted">Olá, {{ authService.currentUser()?.nome }}. Acompanhe os atendimentos em um só lugar.</p></div><a class="button" routerLink="/novo-chamado">+ Novo chamado</a></header>
+<section class="metrics" aria-label="Indicadores de chamados">
+<article class="card metric"><span>Total de chamados</span><strong>{{ chamados.length }}</strong><small>Solicitações registradas</small></article>
+<article class="card metric"><span>Em aberto</span><strong>{{ contar('ABERTO') }}</strong><small>Aguardando atendimento</small></article>
+<article class="card metric"><span>Em atendimento</span><strong>{{ contar('EM_ATENDIMENTO') + contar('AGUARDANDO') }}</strong><small>Equipe trabalhando</small></article>
+<article class="card metric"><span>Concluídos</span><strong>{{ contar('CONCLUIDO') }}</strong><small>Solicitações resolvidas</small></article>
+</section>
+<section class="card"><div class="section-heading"><div><h2>Solicitações recentes</h2><p class="muted">Consulte o status e os detalhes de cada atendimento.</p></div><button class="secondary" (click)="carregarChamados()" [disabled]="carregando">Atualizar</button></div>
+<div class="filters"><label>Buscar chamado<input [(ngModel)]="busca" placeholder="Título ou solicitante"></label><label>Status<select [(ngModel)]="statusFiltro"><option value="">Todos os status</option><option value="ABERTO">Aberto</option><option value="EM_ATENDIMENTO">Em atendimento</option><option value="AGUARDANDO">Aguardando</option><option value="CONCLUIDO">Concluído</option><option value="CANCELADO">Cancelado</option></select></label></div>
+@if (mensagemErro) { <p class="error" role="alert">{{ mensagemErro }}</p> }
+@if (carregando) { <p class="empty">Carregando chamados…</p> } @else {
+<div class="table-wrap"><table><thead><tr><th>Chamado</th><th>Solicitante</th><th>Categoria</th><th>Prioridade</th><th>Status</th><th>Criado em</th><th></th></tr></thead><tbody>
+@for (c of filtrados; track c.id) { <tr><td><small>#{{ c.id }}</small><br><strong>{{ c.titulo }}</strong></td><td>{{ c.usuarioNome }}</td><td>{{ categoriaLabel(c.categoria) }}</td><td><span class="badge" [class.urgent]="c.prioridade === 'URGENTE'">{{ c.prioridade }}</span></td><td><span class="badge" [class.done]="c.status === 'CONCLUIDO'" [class.active]="c.status === 'EM_ATENDIMENTO'">{{ statusLabel(c.status) }}</span></td><td>{{ c.criadoEm | date:'dd/MM/yyyy' }}</td><td><a [routerLink]="['/ver-chamado', c.id]">Ver detalhes →</a></td></tr> }
+@empty { <tr><td colspan="7" class="empty">Nenhum chamado encontrado. Abra uma nova solicitação.</td></tr> }
+</tbody></table></div> }
+</section><p class="footer-note">Sistema de Chamados · v1.0.0-beta.1</p>

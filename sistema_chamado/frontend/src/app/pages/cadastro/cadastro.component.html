@@ -1,0 +1,10 @@
+<section class="auth-card card"><p class="eyebrow">PRIMEIRO ACESSO</p><h1>Criar conta</h1>
+<form (ngSubmit)="cadastrar()">
+<label>Nome<input name="nome" [(ngModel)]="nome" maxlength="100" required autocomplete="name"></label>
+<label>Usuário<input name="username" [(ngModel)]="username" maxlength="50" required autocomplete="username"></label>
+<label>E-mail<input type="email" name="email" [(ngModel)]="email" required autocomplete="email"></label>
+<label>Senha<input type="password" name="password" [(ngModel)]="password" minlength="6" maxlength="72" required autocomplete="new-password"></label>
+<label>Departamento<select name="departamento" [(ngModel)]="departamento">@for (d of departamentos; track d.value) { <option [value]="d.value">{{ d.label }}</option> }</select></label>
+@if (mensagemErro) { <p class="error" role="alert">{{ mensagemErro }}</p> }
+<button [disabled]="carregando">{{ carregando ? 'Cadastrando…' : 'Criar conta' }}</button>
+</form><a routerLink="/login">Voltar ao login</a></section>

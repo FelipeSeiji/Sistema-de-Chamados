@@ -42,13 +42,14 @@ public class UsuarioController {
     @PostMapping
     public ResponseEntity<UsuarioResponseDTO> criar(@RequestBody @Valid CriarUsuarioDTO dto) {
         Usuario entity = usuarioMapper.toEntity(dto);
+        entity.setUsuarioTipo(com.tvdiario.sistema_chamado.domain.usuario.model.enums.UsuarioTipo.USUARIO);
         Usuario criado = usuarioCommandService.criarUsuario(entity);
-        
+
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(criado.getId())
                 .toUri();
-                
+
         return ResponseEntity.created(uri).body(usuarioMapper.toDTO(criado));
     }
 
@@ -56,7 +57,7 @@ public class UsuarioController {
     public ResponseEntity<List<UsuarioResponseDTO>> buscarUsuarios(
             @RequestParam(required = false) Departamento departamento,
             @RequestParam(required = false) String termo) {
-        
+
         List<UsuarioResponseDTO> usuarios = usuarioQueryService.buscarUsuarios(departamento, termo);
         return ResponseEntity.ok(usuarios);
     }
@@ -75,9 +76,9 @@ public class UsuarioController {
 
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioResponseDTO> atualizar(
-            @PathVariable UUID id, 
+            @PathVariable UUID id,
             @RequestBody @Valid AtualizarUsuarioDTO dto) {
-        
+
         Usuario atualizado = usuarioCommandService.atualizarUsuario(id, dto);
         return ResponseEntity.ok(usuarioMapper.toDTO(atualizado));
     }

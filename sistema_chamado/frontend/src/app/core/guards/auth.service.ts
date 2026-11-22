@@ -1,48 +1,30 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, firstValueFrom, switchMap, tap } from 'rxjs';
 import { LoginDTO } from '../usuario/dto/loginDTO';
 import { UsuarioResponseDTO } from '../usuario/dto/usuarioResponseDTO';
-
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({providedIn: 'root'})
 export class AuthService {
-  private readonly baseUrl = '/api/auth';
-  
+  private readonly baseUrl = '/api/v1/auth';
   currentUser = signal<UsuarioResponseDTO | null>(null);
-
   constructor(private http: HttpClient) {}
-
-  login(dto: LoginDTO): Observable<{ token: string; usuario: UsuarioResponseDTO }> {
-    return this.http.post<{ token: string; usuario: UsuarioResponseDTO }>(`${this.baseUrl}/login`, dto).pipe(
-      tap((res) => {
-        if (res.token) {
-          localStorage.setItem('token', res.token);
-          this.currentUser.set(res.usuario);
-        }
-      })
-    );
+  async initialize(): Promise<void> {
+    await firstValueFrom(this.http.get(this.baseUrl + '/csrf'));
+    try { this.currentUser.set(await firstValueFrom(this.http.get<UsuarioResponseDTO>(this.baseUrl + '/me'))); }
+    catch { this.currentUser.set(null); }
   }
-
-  logout(): void {
-    localStorage.removeItem('token');
-    this.currentUser.set(null);
+  login(dto: LoginDTO): Observable<UsuarioResponseDTO> {
+    return this.http.get(this.baseUrl + '/csrf').pipe(
+      switchMap(() => this.http.post<UsuarioResponseDTO>(this.baseUrl + '/login', dto)),
+      tap(user => this.currentUser.set(user)));
   }
-
-  isAuthenticated(): boolean {
-    return !!this.currentUser() || !!localStorage.getItem('token');
+  logout(): Observable<void> {
+    return this.http.post<void>(this.baseUrl + '/logout', {}).pipe(
+      tap(() => this.currentUser.set(null)),
+      switchMap(() => this.http.get<void>(this.baseUrl + '/csrf')));
   }
-
-  isTechOrAdmin(): boolean {
-    const user = this.currentUser();
-    return user?.usuarioTipo === 'ADMINISTRADOR' || user?.usuarioTipo === 'TECNICO';
-  }
-
-  setUser(user: UsuarioResponseDTO | null): void {
-    this.currentUser.set(user);
-  }
-  esqueciSenha(email: string): Observable<void> {
-  return this.http.post<void>(`${this.baseUrl}/esqueci-senha`, { email });
-}
+  isAuthenticated(): boolean { return this.currentUser() !== null; }
+  isTechOrAdmin(): boolean { return ['ADMINISTRADOR','TECNICO'].includes(this.currentUser()?.usuarioTipo ?? ''); }
+  isAdmin(): boolean { return this.currentUser()?.usuarioTipo === 'ADMINISTRADOR'; }
+  setUser(user: UsuarioResponseDTO | null): void { this.currentUser.set(user); }
 }

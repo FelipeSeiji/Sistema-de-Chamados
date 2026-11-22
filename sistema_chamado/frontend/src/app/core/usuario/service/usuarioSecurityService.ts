@@ -8,7 +8,7 @@ import { TrocarSenhaDTO } from '../dto/trocarSenhaDTO';
   providedIn: 'root'
 })
 export class UserSecurityService {
-  private readonly baseUrl = '/api/usuarios';
+  private readonly baseUrl = '/api/v1/auth';
 
   constructor(private http: HttpClient) {}
 

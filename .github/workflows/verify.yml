@@ -1,0 +1,30 @@
+name: Validate application
+on: [push, pull_request]
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: sistema_chamado/frontend/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - run: npm ci
+        working-directory: sistema_chamado/frontend
+      - run: npm test -- --watch=false
+        working-directory: sistema_chamado/frontend
+      - run: npm run build
+        working-directory: sistema_chamado/frontend
+      - name: Package complete application
+        working-directory: sistema_chamado
+        run: |
+          mkdir -p src/main/resources/static
+          cp -r frontend/dist/frontend/browser/. src/main/resources/static/
+          chmod +x mvnw
+          ./mvnw verify -B

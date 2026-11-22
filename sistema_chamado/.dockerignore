@@ -17,3 +17,10 @@ target/
 # OS
 .DS_Store
 Thumbs.db
+
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+src/main/resources/*.sql
+src/main/resources/static/
+.env

@@ -9,7 +9,7 @@ import { UsuarioResponseDTO } from '../dto/usuarioResponseDTO';
   providedIn: 'root'
 })
 export class UserImportService {
-  private readonly baseUrl = '/api/usuarios/importar';
+  private readonly baseUrl = '/api/v1/usuarios/importacao';
 
   constructor(private http: HttpClient) {}
 

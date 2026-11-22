@@ -1,66 +1,17 @@
-import { CategoriaChamado } from "../../../chamado/model/enums/categoriaChamado";
-import { Prioridade } from "../../../chamado/model/enums/prioridade";
-import { Departamento } from "../enums/usuarioDepartamento";
-
-export interface CategoriaInfo {
-  value: CategoriaChamado;
-  label: string;
-  icon: string;
-  badgeClass: string;
-}
-
+import { CategoriaChamado } from '../../../chamado/enums/categoriaChamado';
+import { Departamento } from '../enums/usuarioDepartamento';
+export interface CategoriaInfo { value: CategoriaChamado; label: string; icon: string; badgeClass: string; }
 export const CATEGORIAS_CONFIG: CategoriaInfo[] = [
-  {
-    value: CategoriaChamado.HARDWARE,
-    label: 'Hardware e Equipamentos',
-    icon: 'bi-laptop',
-    badgeClass: 'badge-hardware'
-  },
-  {
-    value: CategoriaChamado.SOFTWARE,
-    label: 'Software e Sistemas',
-    icon: 'bi-code-slash',
-    badgeClass: 'badge-software'
-  },
-  {
-    value: CategoriaChamado.REDE,
-    label: 'Redes e Internet',
-    icon: 'bi-wifi',
-    badgeClass: 'badge-rede'
-  },
-  {
-    value: CategoriaChamado.TELEFONIA,
-    label: 'Telefonia e Ramais',
-    icon: 'bi-telephone',
-    badgeClass: 'badge-telefonia'
-  },
-  {
-    value: CategoriaChamado.IMPRESSORA,
-    label: 'Impressoras e Copiadoras',
-    icon: 'bi-printer',
-    badgeClass: 'badge-impressora'
-  },
-  {
-    value: CategoriaChamado.ACROSS,
-    label: 'Sistema Across / Exibição',
-    icon: 'bi-tv',
-    badgeClass: 'badge-across'
-  },
-  {
-    value: CategoriaChamado.OUTROS,
-    label: 'Outros Assuntos / Geral',
-    icon: 'bi-three-dots',
-    badgeClass: 'badge-outros'
-  }
+  { value: CategoriaChamado.TI_EQUIPAMENTOS, label: 'TI · Equipamentos', icon: '', badgeClass: '' },
+  { value: CategoriaChamado.TI_SOFTWARE, label: 'TI · Software', icon: '', badgeClass: '' },
+  { value: CategoriaChamado.TI_REDE, label: 'TI · Rede', icon: '', badgeClass: '' },
+  { value: CategoriaChamado.TI_ACESSO, label: 'TI · Acesso', icon: '', badgeClass: '' },
+  { value: CategoriaChamado.ENG_AUDIO, label: 'Engenharia · Áudio', icon: '', badgeClass: '' },
+  { value: CategoriaChamado.ENG_VIDEO, label: 'Engenharia · Vídeo', icon: '', badgeClass: '' },
+  { value: CategoriaChamado.ENG_REDE, label: 'Engenharia · Rede', icon: '', badgeClass: '' },
+  { value: CategoriaChamado.ENG_ACESSO, label: 'Engenharia · Acesso', icon: '', badgeClass: '' }
 ];
-
-export const PRIORIDADES_LIST = [
-  { value: 'URGENTE' as Prioridade, label: 'Urgente', badgeClass: 'bg-danger' },
-  { value: 'ALTA' as Prioridade, label: 'Alta', badgeClass: 'bg-warning text-dark' },
-  { value: 'NORMAL' as Prioridade, label: 'Normal', badgeClass: 'bg-info text-dark' },
-  { value: 'BAIXA' as Prioridade, label: 'Baixa', badgeClass: 'bg-secondary' }
-];
-
+export const PRIORIDADES_LIST = ['BAIXA','MEDIA','ALTA','URGENTE'];
 export const DEPARTAMENTOS_LIST: { value: Departamento; label: string }[] = [
   { value: 'ADMINISTRATIVO', label: 'Administrativo' },
   { value: 'COMERCIAL', label: 'Comercial' },

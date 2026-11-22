@@ -1,0 +1,13 @@
+<a routerLink="/dashboard">← Voltar ao dashboard</a>
+@if (mensagemErro) { <p class="error" role="alert">{{ mensagemErro }}</p> }
+@if (carregando) { <p class="empty">Carregando chamado…</p> }
+@if (chamado; as c) {
+<section class="card detail"><p class="eyebrow">CHAMADO #{{ c.id }} · {{ c.status }}</p><h1>{{ c.titulo }}</h1><p class="muted">{{ c.usuarioNome }} · {{ c.criadoEm | date:'dd/MM/yyyy HH:mm' }} · {{ c.prioridade }}</p>
+<h2>Descrição</h2><p class="pre-wrap">{{ c.descricao }}</p>
+@if (c.solucao) { <h2>Solução / observações</h2><p class="pre-wrap">{{ c.solucao }}</p> }
+@if (c.status !== 'CONCLUIDO' && c.status !== 'CANCELADO') {
+<div class="actions"><a class="button secondary" [routerLink]="['/editar-chamado', c.id]">Editar chamado</a>@if (authService.isTechOrAdmin() && c.status === 'ABERTO') { <button (click)="assumir()">Iniciar atendimento</button> }</div>
+@if (authService.isTechOrAdmin()) { <label>Solução técnica<textarea [(ngModel)]="solucaoTexto" rows="3"></textarea></label><button (click)="concluir()" [disabled]="!solucaoTexto.trim()">Concluir chamado</button> }
+<label>Motivo do cancelamento<textarea [(ngModel)]="motivoTexto" rows="2"></textarea></label><button class="danger" (click)="cancelar()">Cancelar chamado</button>
+} @else { <label>Motivo da reabertura<textarea [(ngModel)]="motivoTexto" rows="2"></textarea></label><button (click)="reabrir()">Reabrir chamado</button> }
+</section> }

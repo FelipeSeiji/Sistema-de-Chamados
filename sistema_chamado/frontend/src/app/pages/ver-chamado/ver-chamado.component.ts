@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -25,6 +25,7 @@ import { ChamadoWorkflowService } from '../../core/chamado/service/chamadoWorkfl
   styleUrls: ['./ver-chamado.component.css']
 })
 export class VerChamadoComponent implements OnInit {
+  private readonly cdr = inject(ChangeDetectorRef);
   public authService = inject(AuthService);
   private chamadoReader = inject(ChamadoReaderService);
   private chamadoClient = inject(ChamadoClientService);
@@ -35,6 +36,7 @@ export class VerChamadoComponent implements OnInit {
   chamado?: Chamado;
   solucaoTexto = '';
   motivoTexto = '';
+  mensagemErro = '';
   carregando = false;
 
   ngOnInit(): void {
@@ -48,11 +50,13 @@ export class VerChamadoComponent implements OnInit {
     this.carregando = true;
     this.chamadoReader.buscarPorId(id).subscribe({
       next: (c: Chamado) => {
+        this.cdr.markForCheck();
         this.chamado = c;
         this.carregando = false;
       },
       error: (err: unknown) => {
-        console.error('Erro ao buscar detalhe do chamado:', err);
+        this.cdr.markForCheck();
+        this.mensagemErro = (err as {error?: {message?: string}})?.error?.message ?? 'Não foi possível completar a ação. Verifique sua sessão e tente novamente.';
         this.carregando = false;
       }
     });
@@ -62,9 +66,10 @@ export class VerChamadoComponent implements OnInit {
     if (!this.chamado?.id) return;
     this.chamadoWorkflow.assumir(this.chamado.id).subscribe({
       next: (atualizado: Chamado) => {
+        this.cdr.markForCheck();
         this.chamado = atualizado;
       },
-      error: (err: unknown) => console.error('Erro ao assumir chamado:', err)
+      error: (err: unknown) => { this.cdr.markForCheck(); this.mensagemErro = (err as {error?: {message?: string}})?.error?.message ?? 'Não foi possível completar a ação. Verifique sua sessão e tente novamente.'; }
     });
   }
 
@@ -73,10 +78,11 @@ export class VerChamadoComponent implements OnInit {
     const dto: MotivoDTO = { motivo: this.solucaoTexto };
     this.chamadoWorkflow.concluir(this.chamado.id, dto).subscribe({
       next: (atualizado: Chamado) => {
+        this.cdr.markForCheck();
         this.chamado = atualizado;
         this.solucaoTexto = '';
       },
-      error: (err: unknown) => console.error('Erro ao concluir chamado:', err)
+      error: (err: unknown) => { this.cdr.markForCheck(); this.mensagemErro = (err as {error?: {message?: string}})?.error?.message ?? 'Não foi possível completar a ação. Verifique sua sessão e tente novamente.'; }
     });
   }
 
@@ -85,10 +91,11 @@ export class VerChamadoComponent implements OnInit {
     const dto: MotivoDTO = { motivo: this.motivoTexto };
     this.chamadoWorkflow.reabrir(this.chamado.id, dto).subscribe({
       next: (atualizado: Chamado) => {
+        this.cdr.markForCheck();
         this.chamado = atualizado;
         this.motivoTexto = '';
       },
-      error: (err: unknown) => console.error('Erro ao reabrir chamado:', err)
+      error: (err: unknown) => { this.cdr.markForCheck(); this.mensagemErro = (err as {error?: {message?: string}})?.error?.message ?? 'Não foi possível completar a ação. Verifique sua sessão e tente novamente.'; }
     });
   }
 
@@ -97,10 +104,11 @@ export class VerChamadoComponent implements OnInit {
     const dto: MotivoDTO = { motivo: this.motivoTexto };
     this.chamadoClient.cancelar(this.chamado.id, dto).subscribe({
       next: (atualizado: Chamado) => {
+        this.cdr.markForCheck();
         this.chamado = atualizado;
         this.motivoTexto = '';
       },
-      error: (err: unknown) => console.error('Erro ao cancelar chamado:', err)
+      error: (err: unknown) => { this.cdr.markForCheck(); this.mensagemErro = (err as {error?: {message?: string}})?.error?.message ?? 'Não foi possível completar a ação. Verifique sua sessão e tente novamente.'; }
     });
   }
 

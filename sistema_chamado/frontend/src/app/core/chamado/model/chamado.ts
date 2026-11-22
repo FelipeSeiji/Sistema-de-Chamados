@@ -12,7 +12,8 @@ export interface Chamado {
     criadoEm?: string;
     status: StatusChamado;
     prioridade: Prioridade;
-    usuario: Usuario;
+    usuarioId: string;
+    usuarioNome: string;
 }
 
 export interface CategoriaInfo {

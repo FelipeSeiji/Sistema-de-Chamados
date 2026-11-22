@@ -17,11 +17,13 @@ import lombok.RequiredArgsConstructor;
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class ChamadoDashboardController {
+    private final com.tvdiario.sistema_chamado.infrastructure.security.CurrentUser currentUser;
 
     private final ChamadoDashboardService chamadoDashboardService;
 
     @GetMapping("/estatisticas")
     public ResponseEntity<Map<String, Long>> obterEstatisticas() {
+        currentUser.requireTech();
         return ResponseEntity.ok(chamadoDashboardService.obterEstatisticas());
     }
 }

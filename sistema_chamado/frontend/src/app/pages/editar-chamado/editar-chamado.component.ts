@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -22,6 +22,7 @@ import { ChamadoClientService } from '../../core/chamado/service/chamadoClientSe
   styleUrls: ['./editar-chamado.component.css']
 })
 export class EditarChamadoComponent implements OnInit {
+  private readonly cdr = inject(ChangeDetectorRef);
   private chamadoReader = inject(ChamadoReaderService);
   private chamadoClient = inject(ChamadoClientService);
   private route = inject(ActivatedRoute);
@@ -33,6 +34,7 @@ export class EditarChamadoComponent implements OnInit {
   categoria!: CategoriaChamado;
   prioridade!: Prioridade;
   categorias = CATEGORIAS_CONFIG;
+  mensagemErro = '';
   carregando = false;
 
   ngOnInit(): void {
@@ -41,6 +43,7 @@ export class EditarChamadoComponent implements OnInit {
       this.carregando = true;
       this.chamadoReader.buscarPorId(this.chamadoId).subscribe({
         next: (c: Chamado) => {
+        this.cdr.markForCheck();
           this.titulo = c.titulo;
           this.descricao = c.descricao;
           // Cast explícito para garantir compatibilidade caso algum DTO venha diferente
@@ -49,7 +52,8 @@ export class EditarChamadoComponent implements OnInit {
           this.carregando = false;
         },
         error: (err: unknown) => {
-          console.error('Erro ao carregar chamado:', err);
+        this.cdr.markForCheck();
+          this.mensagemErro = (err as {error?: {message?: string}})?.error?.message ?? 'Não foi possível completar a ação. Verifique sua sessão e tente novamente.';
           this.carregando = false;
         }
       });
@@ -66,7 +70,7 @@ export class EditarChamadoComponent implements OnInit {
 
     this.chamadoClient.editar(this.chamadoId, dto).subscribe({
       next: () => this.router.navigate(['/ver-chamado', this.chamadoId]),
-      error: (err: unknown) => console.error('Erro ao editar chamado:', err)
+      error: (err: unknown) => { this.cdr.markForCheck(); this.mensagemErro = (err as {error?: {message?: string}})?.error?.message ?? 'Não foi possível completar a ação. Verifique sua sessão e tente novamente.'; }
     });
   }
 }

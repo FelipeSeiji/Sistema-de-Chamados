@@ -28,6 +28,6 @@ export class ChamadoReaderService {
   }
 
   obterEstatisticas(): Observable<Record<string, number>> {
-    return this.http.get<Record<string, number>>(`${this.baseUrl}/estatisticas`);
+    return this.http.get<Record<string, number>>(`${this.baseUrl}/dashboard/estatisticas`);
   }
 }

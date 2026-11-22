@@ -13,12 +13,22 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) 
+            .csrf(csrf -> csrf
+                .csrfTokenRepository(org.springframework.security.web.csrf.CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .csrfTokenRequestHandler(new org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler()))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/v1/auth/**", "/h2-console/**").permitAll() 
-                .anyRequest().permitAll() 
+                .requestMatchers("/api/v1/auth/login", "/api/v1/auth/csrf", "/api/health").permitAll()
+                .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/v1/usuarios").permitAll()
+                .requestMatchers("/api/v1/usuarios/**").hasRole("ADMINISTRADOR")
+                .requestMatchers("/api/**").authenticated()
+                .anyRequest().permitAll()
             )
-            .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin())); 
+            .exceptionHandling(errors -> errors
+                .authenticationEntryPoint((request, response, exception) -> response.sendError(401))
+                .accessDeniedHandler((request, response, exception) -> response.sendError(403)))
+            .logout(logout -> logout.logoutUrl("/api/v1/auth/logout")
+                .logoutSuccessHandler((request, response, authentication) -> response.setStatus(204)))
+            .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
 
         return http.build();
     }

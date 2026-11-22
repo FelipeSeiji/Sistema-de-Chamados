@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -15,6 +15,7 @@ import { UserSecurityService } from '../../core/usuario/service/usuarioSecurityS
   styleUrls: ['./trocar-senha.component.css']
 })
 export class TrocarSenhaComponent {
+  private readonly cdr = inject(ChangeDetectorRef);
   private authService = inject(AuthService);
   private userSecurityService = inject(UserSecurityService);
   private router = inject(Router);
@@ -46,11 +47,13 @@ export class TrocarSenhaComponent {
 
     this.userSecurityService.trocarSenha(user.id, dto).subscribe({
       next: () => {
+        this.cdr.markForCheck();
         this.carregando = false;
         alert('Senha alterada com sucesso!');
         this.router.navigate(['/dashboard']);
       },
       error: (err: unknown) => {
+        this.cdr.markForCheck();
         this.carregando = false;
         this.mensagemErro = 'Erro ao alterar a senha. Verifique se a senha atual está correta.';
         console.error('Erro ao trocar senha:', err);

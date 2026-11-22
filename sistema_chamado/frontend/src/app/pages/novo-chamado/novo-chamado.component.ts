@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -23,6 +23,7 @@ import { UserAdminService } from '../../core/usuario/service/usuarioAdminService
   styleUrls: ['./novo-chamado.component.css']
 })
 export class NovoChamadoComponent implements OnInit {
+  private readonly cdr = inject(ChangeDetectorRef);
   public authService = inject(AuthService);
   private chamadoClient = inject(ChamadoClientService);
   private userAdminService = inject(UserAdminService);
@@ -30,9 +31,9 @@ export class NovoChamadoComponent implements OnInit {
 
   titulo = '';
   descricao = '';
-  categoria: CategoriaChamado = 'HARDWARE' as CategoriaChamado;
-  prioridade: Prioridade = 'NORMAL' as Prioridade;
-  
+  categoria: CategoriaChamado = 'TI_EQUIPAMENTOS' as CategoriaChamado;
+  prioridade: Prioridade = 'MEDIA';
+
   usuarioSolicitanteId = '';
 
   usuarios: UsuarioResponseDTO[] = [];
@@ -42,13 +43,15 @@ export class NovoChamadoComponent implements OnInit {
 
   ngOnInit(): void {
     const user = this.authService.currentUser();
-    
-    if (this.authService.isTechOrAdmin()) {
+    this.usuarioSolicitanteId = user?.id ?? '';
+
+    if (this.authService.isAdmin()) {
       this.userAdminService.listar().subscribe({
         next: (users: UsuarioResponseDTO[]) => {
+        this.cdr.markForCheck();
           this.usuarios = users;
         },
-        error: (err: unknown) => console.error('Erro ao carregar lista de usuários:', err)
+        error: (err: unknown) => { this.cdr.markForCheck(); console.error('Erro ao carregar lista de usuários:', err); }
       });
     } else if (user) {
       this.usuarioSolicitanteId = user.id || '';
@@ -73,10 +76,12 @@ export class NovoChamadoComponent implements OnInit {
 
     this.chamadoClient.abrirChamado(dto, this.usuarioSolicitanteId).subscribe({
       next: () => {
+        this.cdr.markForCheck();
         this.carregando = false;
         this.router.navigate(['/dashboard']);
       },
       error: (err: unknown) => {
+        this.cdr.markForCheck();
         this.carregando = false;
         this.mensagemErro = 'Erro ao abrir o chamado. Tente novamente.';
         console.error('Erro ao abrir chamado:', err);

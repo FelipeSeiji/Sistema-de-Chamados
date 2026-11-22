@@ -11,7 +11,7 @@ import { UsuarioResponseDTO } from '../dto/usuarioResponseDTO';
   providedIn: 'root'
 })
 export class UserAdminService {
-  private readonly baseUrl = '/api/usuarios';
+  private readonly baseUrl = '/api/v1/usuarios';
 
   constructor(private http: HttpClient) {}
 

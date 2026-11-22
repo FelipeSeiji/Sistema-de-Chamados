@@ -1,0 +1,12 @@
+<section class="auth-card card">
+  <p class="eyebrow">CENTRAL DE SUPORTE</p><h1>Sistema de Chamados</h1>
+  <p class="muted">Entre para acompanhar e resolver solicitações técnicas.</p>
+  <form (ngSubmit)="entrar()">
+    <label>E-mail<input type="email" name="email" [(ngModel)]="email" required autocomplete="username"></label>
+    <label>Senha<input type="password" name="senha" [(ngModel)]="senha" required autocomplete="current-password"></label>
+    @if (mensagemErro) { <p class="error" role="alert">{{ mensagemErro }}</p> }
+    <button type="submit" [disabled]="carregando">{{ carregando ? 'Entrando…' : 'Entrar' }}</button>
+  </form>
+  <p class="muted">Primeiro acesso? <a routerLink="/cadastro">Criar conta</a></p>
+  <aside class="demo-note"><strong>Acesso de demonstração</strong><br>tecnico&#64;chamados.demo · Demo&#64;12345<br><small>Disponível quando os dados de demonstração estão habilitados.</small></aside>
+</section>

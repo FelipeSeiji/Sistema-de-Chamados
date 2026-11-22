@@ -24,7 +24,9 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/chamados")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
+@org.springframework.transaction.annotation.Transactional(readOnly = true)
 public class ChamadoQueryController {
+    private final com.tvdiario.sistema_chamado.infrastructure.security.CurrentUser currentUser;
 
     private final ChamadoQueryService chamadoQueryService;
     private final ChamadoMapper chamadoMapper;
@@ -44,17 +46,23 @@ public class ChamadoQueryController {
             lista = chamadoQueryService.listarTodos();
         }
 
+        if (!currentUser.isTech()) {
+            var userId = currentUser.get().getId();
+            lista = lista.stream().filter(c -> c.getUsuario().getId().equals(userId)).toList();
+        }
         return ResponseEntity.ok(chamadoMapper.toDTOList(lista));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ChamadoResponseDTO> buscarPorId(@PathVariable Long id) {
         Chamado chamado = chamadoQueryService.buscarPorId(id);
+        currentUser.requireOwnerOrTech(chamado);
         return ResponseEntity.ok(chamadoMapper.toDTO(chamado));
     }
 
     @GetMapping("/usuario/{usuarioId}")
     public ResponseEntity<List<ChamadoResponseDTO>> listarPorUsuario(@PathVariable UUID usuarioId) {
+        if (!currentUser.get().getId().equals(usuarioId)) currentUser.requireTech();
         List<Chamado> lista = chamadoQueryService.listarPorUsuario(usuarioId);
         return ResponseEntity.ok(chamadoMapper.toDTOList(lista));
     }
