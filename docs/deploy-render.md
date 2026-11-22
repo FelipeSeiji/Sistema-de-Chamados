@@ -2,6 +2,16 @@
 
 A aplicação é distribuída em um único serviço Docker, contendo o frontend Angular e o backend Spring Boot. O PostgreSQL fica no Neon e mantém os dados quando o serviço do Render reinicia.
 
+## Publicação desta entrega
+
+- Aplicação: [sistema-de-chamados-pw2c.onrender.com](https://sistema-de-chamados-pw2c.onrender.com).
+- Serviço: `sistema-de-chamados`, plano Free, região Virginia (US East).
+- Banco: projeto exclusivo `sistema-de-chamados` no Neon, plano Free, PostgreSQL 18, região AWS US East 2 (Ohio).
+- Versão: `1.0.0-beta.1`.
+- Credencial pública de demonstração: `tecnico@chamados.demo` / `Demo@12345`.
+
+O deploy foi concluído e o fluxo de cadastro, login, abertura, atendimento e conclusão de chamados foi validado no endereço público. O print do README foi capturado nesse ambiente. O repositório é privado e requer liberação de acesso ao avaliador.
+
 ## Serviço da aplicação
 
 Use o repositório individual `FelipeSeiji/Sistema-de-Chamados`, branch `main`, e as configurações:

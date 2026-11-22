@@ -2,19 +2,19 @@
 
 Aplicação de controle de chamados técnicos, inspirada no fluxo de um helpdesk corporativo. Permite cadastrar usuários, entrar no sistema, abrir solicitações e acompanhar o atendimento até a conclusão.
 
-**Versão:** `1.0.0-beta.1` · **Status:** validada localmente; deploy público pendente.
+**Versão:** `1.0.0-beta.1` · **Status:** publicada no Render, com PostgreSQL persistente no Neon.
 
 ## Links da entrega
 
-- **Repositório configurado neste projeto:** [FelipeSeiji/Sistema-de-Chamados](https://github.com/FelipeSeiji/Sistema-de-Chamados).
-- **Aplicação publicada:** pendente. A publicação no Railway exige uma conta com plano ativo. Ainda não existe uma URL pública desta versão.
+- **Repositório individual:** [FelipeSeiji/Sistema-de-Chamados](https://github.com/FelipeSeiji/Sistema-de-Chamados).
+- **Aplicação publicada:** [Sistema de Chamados no Render](https://sistema-de-chamados-pw2c.onrender.com).
 - **Código da atividade:** o ZIP deve ser gerado com `scripts/package-source.ps1`, que inclui os arquivos de código e o print deste README.
 
-Antes de entregar, publique esta versão em um repositório individual da sua conta e ajuste o link acima se necessário. As alterações preparadas localmente precisam ser enviadas ao GitHub para que o avaliador tenha acesso a elas.
+O repositório está privado. Antes de entregar o link, conceda acesso ao avaliador ou altere a visibilidade do repositório. O acesso à aplicação publicada é público e permite login com as credenciais abaixo ou cadastro de uma nova conta.
 
 ## Dashboard
 
-Print real da aplicação em execução local, autenticada como técnico, usando dados fictícios. A tela é implementada em `sistema_chamado/frontend/src/app/pages/dashboard/`; a imagem também acompanha o ZIP do código.
+Print real da aplicação publicada no Render, autenticada como técnico, usando dados fictícios. A tela é implementada em `sistema_chamado/frontend/src/app/pages/dashboard/`; a imagem também acompanha o ZIP do código.
 
 ![Dashboard da aplicação de controle de chamados](docs/images/dashboard.jpg)
 
@@ -29,9 +29,9 @@ O projeto utiliza o formato `MAJOR.MINOR.PATCH[-PRÉ-LANÇAMENTO]`:
 | PATCH | Correções compatíveis, sem novas funcionalidades | `1.0.0` → `1.0.1` |
 | Pré-lançamento | Identifica uma versão em validação antes da versão estável | `1.0.0-beta.1` → `1.0.0-beta.2` |
 
-Em **`1.0.0-beta.1`**, `1` identifica a primeira linha principal do sistema, os dois zeros indicam sua versão inicial e `beta.1` identifica a primeira versão de avaliação. O sufixo permanece porque o deploy público ainda não foi validado. Backend (`pom.xml`), frontend (`package.json` e lockfile), dashboard e endpoint de saúde usam a mesma versão.
+Em **`1.0.0-beta.1`**, `1` identifica a primeira linha principal do sistema, os dois zeros indicam sua versão inicial e `beta.1` identifica a primeira versão de avaliação acadêmica. Backend (`pom.xml`), frontend (`package.json` e lockfile), dashboard e endpoint de saúde usam a mesma versão.
 
-As próximas versões devem seguir esse formato e receber uma tag Git correspondente, por exemplo `v1.0.0-beta.1`, após o commit de entrega.
+O código desta entrega é identificado pela tag Git `v1.0.0-beta.1`. As próximas versões devem seguir esse formato e receber sua própria tag correspondente ao commit de entrega.
 
 ## Funcionalidades e perfis
 
@@ -114,27 +114,29 @@ npm test -- --watch=false
 npm run build
 ```
 
-Foram aprovados **4 testes de backend** e **2 testes de frontend**, além do build de produção e do empacotamento do JAR. Os testes cobrem o ciclo do chamado, cadastro sem elevação de privilégio, login, troca de senha, sessão, logout, CSRF, acesso aos próprios chamados e atualização assíncrona do dashboard. O fluxo de login e a interface também foram conferidos no navegador local.
+Foram aprovados **4 testes de backend** e **2 testes de frontend**, além do build de produção e do empacotamento do JAR. Os testes cobrem o ciclo do chamado, cadastro sem elevação de privilégio, login, troca de senha, sessão, logout, CSRF, acesso aos próprios chamados e atualização assíncrona do dashboard. A [validação automática no GitHub Actions](https://github.com/FelipeSeiji/Sistema-de-Chamados/actions/runs/44969556203) também passou.
 
-O arquivo `.github/workflows/verify.yml` executa a validação ao enviar código ao GitHub. O Docker Compose teve sua configuração validada; a imagem Docker não foi construída nesta máquina porque o daemon Docker está desligado.
+O arquivo `.github/workflows/verify.yml` executa a validação ao enviar código ao GitHub. A imagem Docker foi construída com sucesso no Render e a aplicação conectou ao PostgreSQL 18 do Neon. No endereço público, foram conferidos login de demonstração, abertura de chamado, início de atendimento, conclusão com solução, cadastro de uma conta comum, login dessa conta, logout e restauração da sessão após atualizar a página. Uma requisição sem sessão para `/api/chamados` retornou HTTP 401.
 
-## Deploy em um projeto novo no Railway
+## Deploy no Render com banco Neon
 
-Siga [o guia de publicação](docs/deploy-railway.md). A configuração inclui Dockerfile com build do frontend e backend, suporte à porta `PORT`, endpoint `/api/health` e conexão com PostgreSQL por variáveis de ambiente.
+Siga [o guia de publicação no Render](docs/deploy-render.md). O arquivo `render.yaml` descreve o serviço gratuito. A configuração inclui Dockerfile com build do frontend e backend, suporte à porta `PORT`, endpoint `/api/health` e conexão com PostgreSQL por variáveis secretas de ambiente.
 
-O deploy permanece pendente por decisão do responsável. Nenhuma aplicação existente foi alterada.
+A aplicação foi publicada em um serviço novo e exclusivo para este sistema. O endpoint [de saúde](https://sistema-de-chamados-pw2c.onrender.com/api/health) retorna `status=UP` e `version=1.0.0-beta.1`. As credenciais do Neon não estão no repositório. O [guia do Railway](docs/deploy-railway.md) permanece apenas como alternativa de configuração, não utilizada nesta publicação.
 
 ## Limites desta versão
 
 - A recuperação de senha por e-mail não está implementada; a tela orienta procurar o administrador.
 - Os dados e contas de demonstração são públicos e fictícios.
-- A versão ainda não foi validada em um ambiente público nem contra um PostgreSQL em execução nesta sessão.
+- O plano gratuito do Render suspende a aplicação após 15 minutos sem tráfego; o primeiro acesso pode levar cerca de um minuto. O Neon possui cotas no plano gratuito.
+- As sessões ficam na memória da aplicação: após uma reinicialização do serviço, é necessário entrar novamente. Os usuários e chamados permanecem no PostgreSQL.
 - O ZIP deve ser atualizado caso o código ou o print sejam alterados.
 
 ## Conferência antes da entrega
 
-- [ ] Enviar esta versão para o repositório individual e conferir a imagem no README do GitHub.
-- [ ] Criar a tag da versão correspondente ao commit enviado.
-- [ ] Publicar em um projeto novo no Railway e preencher a URL pública neste README.
-- [ ] Testar login em janela anônima com as credenciais documentadas e com uma conta recém-cadastrada.
-- [ ] Gerar o ZIP com `scripts/package-source.ps1` e entregar a mesma versão do repositório.
+- [x] Enviar esta versão para o repositório individual com a imagem no README.
+- [x] Criar a tag da versão correspondente ao commit enviado.
+- [x] Publicar em um serviço novo no Render e preencher a URL pública neste README.
+- [x] Testar login público com as credenciais documentadas e com uma conta recém-cadastrada.
+- [x] Gerar o ZIP com `scripts/package-source.ps1`, contendo o mesmo código e print desta versão.
+- [ ] Garantir que o avaliador tenha acesso ao repositório privado antes de entregar o link.
